@@ -1,38 +1,12 @@
-# create-svelte
+# Scratchpad
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+[![Netlify Status](https://api.netlify.com/api/v1/badges/32a1752a-a032-43a2-9d79-f84e8ff58415/deploy-status)](https://app.netlify.com/sites/jade-cocada-9c9372/deploys)
 
-## Creating a project
+An scratchpad for scratch work or jotting down quick notes.
+Save your notes to local storage, and optionally work on them with others
+in real time.
 
-If you're seeing this, you've probably already done this step. Congrats!
+Built with [Svelte](https://svelte.dev) and [Yjs](https://yjs.dev).
+Deployed on [Netlify](https://netlify.com).
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+Check it out at [https://scratchpad.kev3u.com](https://scratchpad.kev3u.com).

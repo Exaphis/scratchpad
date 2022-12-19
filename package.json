@@ -32,6 +32,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"daisyui": "^2.45.0",
 		"svelte-codemirror-editor": "^1.1.0"
 	}
 }

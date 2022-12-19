@@ -4,4 +4,15 @@
 	let value = '';
 </script>
 
-<CodeMirror bind:value styles={{ '&': { height: '100vh' } }} />
+<svelte:head>
+	<title>Scratchpad</title>
+</svelte:head>
+
+<CodeMirror
+	bind:value
+	styles={{
+		'&': { height: '100vh' },
+		'.cm-gutters': { backgroundColor: 'hsl(var(--b2))', border: 'none' },
+		'.cm-activeLineGutter': { backgroundColor: 'hsl(var(--b3))' }
+	}}
+/>

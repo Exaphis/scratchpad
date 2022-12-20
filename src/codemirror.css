@@ -1,5 +1,6 @@
 .CodeMirror {
 	height: 100vh;
+	font-size: var(--cm-font-size);
 }
 
 .CodeMirror-gutters {

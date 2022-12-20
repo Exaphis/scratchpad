@@ -7,10 +7,20 @@
 	import { CodemirrorBinding } from 'y-codemirror';
 	import { WebrtcProvider } from 'y-webrtc';
 	import { Icon } from '@steeze-ui/svelte-icon';
-	import { Share, ArrowDownTray, ChartBar, Home } from '@steeze-ui/heroicons';
+	import {
+		Share,
+		ArrowDownTray,
+		ChartBar,
+		Home,
+		UserGroup,
+		Plus,
+		Minus
+	} from '@steeze-ui/heroicons';
 	import { onMount } from 'svelte';
 	import { v4 as uuidv4 } from 'uuid';
 	import { page } from '$app/stores';
+	import { toast } from '@zerodevx/svelte-toast';
+	import Alert from '../../components/Alert.svelte';
 
 	let roomName = $page.params.roomName || '';
 	// whether or not the user started the room
@@ -26,6 +36,7 @@
 	let wordCount = 0;
 	let characterCount = 0;
 	let characterCountWithoutSpaces = 0;
+	let connectedUsers = 0;
 
 	function countWords(s: string) {
 		const matches = s.match(/\S+/g);
@@ -96,8 +107,31 @@
 			yUndoManager
 		});
 
+		function updateConnectedUsers() {
+			connectedUsers = provider.awareness.getStates().size;
+		}
+		updateConnectedUsers();
+		provider.awareness.on('change', updateConnectedUsers);
+
 		// add roomName to URL
 		history.replaceState(null, '', `/${roomName}`);
+
+		// copy URL to clipboard
+		if (local) {
+			const url = window.location.href;
+			navigator.clipboard.writeText(url).then(() => {
+				toast.push({
+					component: {
+						src: Alert,
+						props: {
+							message: `Copied URL to clipboard`,
+							type: 'success'
+						}
+					},
+					duration: 3000
+				});
+			});
+		}
 	}
 
 	function downloadFile(title: string, contents: string) {
@@ -112,37 +146,61 @@
 
 		document.body.removeChild(element);
 	}
+
+	let cmFontSize = parseInt(localStorage.getItem('cmFontSize') || '') || 13;
+	function updateCmFontSize(diff: number) {
+		cmFontSize += diff;
+		cmFontSize = Math.max(cmFontSize, 1);
+		binding.cm.refresh();
+		localStorage.setItem('cmFontSize', cmFontSize.toString());
+	}
 </script>
 
 <svelte:head>
 	<title>Scratchpad</title>
 </svelte:head>
 
-<textarea id="editor" bind:this={editorContainer} />
+<div style={`--cm-font-size: ${cmFontSize}px`}>
+	<textarea id="editor" bind:this={editorContainer} />
+</div>
 
-<!-- fancy class fixes btn-group css when buttons are wrapped in tooltips (https://github.com/saadeghi/daisyui/issues/1203#issuecomment-1270692288) -->
-<div
-	class="btn-group absolute right-3 bottom-3 [&>:first-child>.btn]:rounded-l-lg [&>:last-child>.btn]:rounded-r-lg [&>*>.btn]:rounded-none"
->
-	<!-- ensure we reload when going home so localStorage is loaded -->
-	<!-- for some reason the disabled attribute is broken on <a> tags, so add btn-disabled to the class name -->
-	<div class="tooltip tooltip-left" data-tip="Leave collaboration session">
-		<a class={`btn` + (roomName ? '' : ' btn-disabled')} href="/" target="_self" rel="external"
-			><Icon src={Home} size="20px" /></a
-		>
+<div class="flex flex-col items-end gap-1 absolute right-3 bottom-3">
+	{#if connectedUsers > 0}
+		<span class="badge gap-1"><Icon src={UserGroup} size="17px" /> {connectedUsers}</span>
+	{/if}
+
+	<div class="btn-group">
+		<button class="btn btn-sm" on:click={() => updateCmFontSize(2)}>
+			<Icon src={Plus} size="20px" />
+		</button>
+		<button class="btn btn-sm" on:click={() => updateCmFontSize(-2)}>
+			<Icon src={Minus} size="20px" />
+		</button>
 	</div>
-	<div class="tooltip tooltip-left" data-tip="Enter collaborative session with current text">
-		<button class="btn" on:click={share} disabled={!!roomName}
-			><Icon src={Share} size="20px" /></button
-		>
-	</div>
-	<div class="tooltip tooltip-left" data-tip="Download as text file">
-		<button class="btn" on:click={() => downloadFile('scratchpad.txt', binding.cm.getValue())}
-			><Icon src={ArrowDownTray} size="20px" /></button
-		>
-	</div>
-	<div class="tooltip tooltip-left" data-tip="Show word count">
-		<label class="btn" for="word-count-modal"><Icon src={ChartBar} size="20px" /></label>
+	<!-- fancy class fixes btn-group css when buttons are wrapped in tooltips (https://github.com/saadeghi/daisyui/issues/1203#issuecomment-1270692288) -->
+	<div
+		class="btn-group [&>:first-child>.btn]:rounded-l-lg [&>:last-child>.btn]:rounded-r-lg [&>*>.btn]:rounded-none"
+	>
+		<!-- ensure we reload when going home so localStorage is loaded -->
+		<!-- for some reason the disabled attribute is broken on <a> tags, so add btn-disabled to the class name -->
+		<div class="tooltip tooltip-left" data-tip="Leave collaboration session">
+			<a class={`btn` + (roomName ? '' : ' btn-disabled')} href="/" target="_self" rel="external"
+				><Icon src={Home} size="20px" /></a
+			>
+		</div>
+		<div class="tooltip tooltip-left" data-tip="Enter collaborative session with current text">
+			<button class="btn" on:click={share} disabled={!!roomName}
+				><Icon src={Share} size="20px" /></button
+			>
+		</div>
+		<div class="tooltip tooltip-left" data-tip="Download as text file">
+			<button class="btn" on:click={() => downloadFile('scratchpad.txt', binding.cm.getValue())}
+				><Icon src={ArrowDownTray} size="20px" /></button
+			>
+		</div>
+		<div class="tooltip tooltip-left" data-tip="Show word count">
+			<label class="btn" for="word-count-modal"><Icon src={ChartBar} size="20px" /></label>
+		</div>
 	</div>
 </div>
 

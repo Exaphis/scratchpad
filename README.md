@@ -6,7 +6,8 @@ An scratchpad for scratch work or jotting down quick notes.
 Save your notes to local storage, and optionally work on them with others
 in real time.
 
-Built with [Svelte](https://svelte.dev) and [Yjs](https://yjs.dev).
+Built with [Svelte](https://svelte.dev), [Yjs](https://yjs.dev), [CodeMirror](https://codemirror.net/),
+and [daisyUI](https://daisyui.com/).
 Deployed on [Netlify](https://netlify.com).
 
 Check it out at [https://scratchpad.kev3u.com](https://scratchpad.kev3u.com).

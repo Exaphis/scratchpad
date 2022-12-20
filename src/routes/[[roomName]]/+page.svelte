@@ -126,9 +126,11 @@
 >
 	<!-- ensure we reload when going home so localStorage is loaded -->
 	<!-- for some reason the disabled attribute is broken on <a> tags, so add btn-disabled to the class name -->
-	<a class={`btn` + (roomName ? '' : ' btn-disabled')} href="/" target="_self" rel="external"
-		><Icon src={Home} size="20px" /></a
-	>
+	<div class="tooltip tooltip-left" data-tip="Leave collaboration session">
+		<a class={`btn` + (roomName ? '' : ' btn-disabled')} href="/" target="_self" rel="external"
+			><Icon src={Home} size="20px" /></a
+		>
+	</div>
 	<div class="tooltip tooltip-left" data-tip="Enter collaborative session with current text">
 		<button class="btn" on:click={share} disabled={!!roomName}
 			><Icon src={Share} size="20px" /></button

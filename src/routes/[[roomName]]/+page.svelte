@@ -53,7 +53,8 @@
 
 	onMount(() => {
 		const editor = CodeMirror.fromTextArea(editorContainer, {
-			lineNumbers: true
+			lineNumbers: true,
+			lineWrapping: true
 		});
 
 		ydoc = new Y.Doc();

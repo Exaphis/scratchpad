@@ -99,7 +99,9 @@
 		}
 
 		localStorage.log = 'y-webrtc';
-		const provider = new WebrtcProvider(roomName, ydoc);
+		const provider = new WebrtcProvider(roomName, ydoc, {
+			signaling: ['wss://y-webrtc.fly.dev']
+		});
 
 		// re-create binding with awareness
 		const editor = binding.cm;

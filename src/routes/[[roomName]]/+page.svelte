@@ -159,7 +159,7 @@
 </div>
 
 <div class="flex flex-col items-end gap-1 absolute right-3 bottom-3">
-	{#if !local}
+	{#if roomName}
 		{#if connectedUsers === null}
 			<span class="badge gap-1"><Icon src={UserGroup} size="17px" /> Not connected yet</span>
 		{:else}

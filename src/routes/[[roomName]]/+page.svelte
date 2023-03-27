@@ -6,6 +6,7 @@
 	import CodeMirror from 'codemirror';
 	import { CodemirrorBinding } from 'y-codemirror';
 	import { WebrtcProvider } from 'y-webrtc';
+	import { IndexeddbPersistence } from 'y-indexeddb';
 	import { Icon } from '@steeze-ui/svelte-icon';
 	import {
 		Share,
@@ -36,7 +37,7 @@
 	let wordCount = 0;
 	let characterCount = 0;
 	let characterCountWithoutSpaces = 0;
-	let connectedUsers = 0;
+	let connectedUsers: number | null = null;
 
 	function countWords(s: string) {
 		const matches = s.match(/\S+/g);
@@ -70,19 +71,9 @@
 			wordCount = countWords(text);
 			characterCount = countCharacters(text);
 			characterCountWithoutSpaces = countCharactersWithoutSpaces(text);
-
-			if (local) {
-				localStorage.setItem('text', text);
-			}
 		});
 
-		if (local) {
-			const savedText = localStorage.getItem('text');
-			// must be after observe so word count gets updated
-			if (savedText) {
-				ytext.insert(0, savedText);
-			}
-		}
+		new IndexeddbPersistence(roomName, ydoc);
 
 		if (roomName) {
 			share();
@@ -111,7 +102,7 @@
 		});
 
 		function updateConnectedUsers() {
-			connectedUsers = provider.awareness.getStates().size;
+			connectedUsers = provider.connected ? provider.awareness.getStates().size : null;
 		}
 		updateConnectedUsers();
 		provider.awareness.on('change', updateConnectedUsers);
@@ -168,8 +159,12 @@
 </div>
 
 <div class="flex flex-col items-end gap-1 absolute right-3 bottom-3">
-	{#if connectedUsers > 0}
-		<span class="badge gap-1"><Icon src={UserGroup} size="17px" /> {connectedUsers}</span>
+	{#if !local}
+		{#if connectedUsers === null}
+			<span class="badge gap-1"><Icon src={UserGroup} size="17px" /> Not connected yet</span>
+		{:else}
+			<span class="badge gap-1"><Icon src={UserGroup} size="17px" /> {connectedUsers}</span>
+		{/if}
 	{/if}
 
 	<div class="btn-group">
@@ -184,7 +179,7 @@
 	<div
 		class="btn-group [&>:first-child>.btn]:rounded-l-lg [&>:last-child>.btn]:rounded-r-lg [&>*>.btn]:rounded-none"
 	>
-		<!-- ensure we reload when going home so localStorage is loaded -->
+		<!-- ensure we reload when going home to load the correct indexeddb room-->
 		<!-- for some reason the disabled attribute is broken on <a> tags, so add btn-disabled to the class name -->
 		<div class="tooltip tooltip-left" data-tip="Leave collaboration session">
 			<a class={`btn` + (roomName ? '' : ' btn-disabled')} href="/" target="_self" rel="external"
